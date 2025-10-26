@@ -1,8 +1,4 @@
 # Environment files
-.env
-*.env
-backend/.env
-frontend/.env
 
 # Node artifacts
 node_modules/
