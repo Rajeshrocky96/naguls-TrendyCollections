@@ -1,0 +1,51 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-container">
+      <img src="https://nagulstrendycollections.com/cdn/shop/files/Asset_3.png?v=1682945313&width=240" alt="Nagul's Trendy Collections Logo" class="logo-image">
+      <h1 class="logo-title">Nagul's Trendy Collections Portal</h1>
+    </div>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <div class="input-group">
+          <input 
+            type="email" 
+            formControlName="email" 
+            id="email"
+            class="form-control" 
+            [ngClass]="{ 'has-value': f['email'].value, 'has-error': submitted && f['email'].errors }"
+            required
+          />
+          <label for="email" class="form-label">Email</label>
+        </div>
+        <div *ngIf="submitted && f['email'].errors" class="error-message">
+          <div *ngIf="f['email'].errors['required']">Email is required</div>
+          <div *ngIf="f['email'].errors['email']">Please enter a valid email address</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <div class="input-group">
+          <input 
+            type="password" 
+            formControlName="password" 
+            id="password"
+            class="form-control" 
+            [ngClass]="{ 'has-value': f['password'].value, 'has-error': submitted && f['password'].errors }"
+            required
+          />
+          <label for="password" class="form-label">Password</label>
+        </div>
+        <div *ngIf="submitted && f['password'].errors" class="error-message">
+          <div *ngIf="f['password'].errors['required']">Password is required</div>
+          <div *ngIf="f['password'].errors['minlength']">Password must be at least 6 characters</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <button type="submit" class="login-btn">Login</button>
+        <p class="login-hint">Login to access Shopify Bulk Upload Dashboard</p>
+      </div>
+    </form>
+  </div>
+</div>

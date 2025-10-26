@@ -1,0 +1,168 @@
+<div class="products-page">
+
+  <div class="products-content">
+    <header class="products-header">
+      <div class="header-left">
+        <button *ngIf="mode==='form'" class="icon-btn" (click)="onCancel()" title="Back to list">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h2>Products</h2>
+      </div>
+    </header>
+
+    <!-- LIST VIEW -->
+    <section *ngIf="mode==='list'" class="list-view">
+      <div class="filters-row">
+        <div class="filters-left">
+          <div class="field">
+            <input type="text" placeholder="Search product name..." [(ngModel)]="searchTerm" />
+          </div>
+          <div class="field">
+            <select [(ngModel)]="categoryFilter">
+              <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <select [(ngModel)]="statusFilter">
+              <option value="All">All Status</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="filters-right">
+          <button class="btn btn-primary" (click)="onAddProduct()">
+            <i class="fas fa-plus"></i>
+            Add Product
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="products-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Stock</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of filteredProducts">
+              <td class="name-col">
+                <div class="name-cell">
+                  <div class="thumb" [ngClass]="{placeholder: !(p.images && p.images.length)}">
+                    <img *ngIf="p.images && p.images.length" [src]="p.images[0]" alt="{{p.name}}" />
+                    <i *ngIf="!(p.images && p.images.length)" class="fas fa-box"></i>
+                  </div>
+                  <div class="name-text">{{ p.name }}</div>
+                </div>
+              </td>
+              <td>{{ p.category }}</td>
+              <td>{{ p.variants?.[0]?.stock ?? 0 }}</td>
+              <td>₹{{ p.variants?.[0]?.price ?? 0 }}</td>
+              <td>
+                <span class="status" [class.active]="p.status==='Active'" [class.inactive]="p.status==='Inactive'">{{ p.status }}</span>
+              </td>
+              <td>{{ p.lastUpdated | date:'medium' }}</td>
+              <td class="actions-col">
+                <button class="btn btn-small" (click)="onEditProduct(p)"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn btn-small btn-danger" (click)="onDeleteProduct(p.product_id)"><i class="fas fa-trash"></i> Delete</button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredProducts.length===0">
+              <td colspan="7" class="empty">No products found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FORM VIEW -->
+    <section *ngIf="mode==='form'" class="form-view">
+      <form [formGroup]="productForm" (ngSubmit)="onSave()">
+        <div class="form-grid">
+          <div class="form-card">
+            <div class="form-row">
+              <label>Upload Images</label>
+              <div class="dropzone" [class.dragging]="isDragging" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="triggerFileSelect(fileInput)">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <div>Drag & drop images here</div>
+                <div class="hint">or click to browse</div>
+                <input #fileInput type="file" multiple accept="image/*" (change)="onImagesSelected($event)" hidden />
+              </div>
+              <div class="previews" *ngIf="productForm.get('images')?.value?.length">
+                <div class="preview" *ngFor="let img of productForm.get('images')?.value; let i = index">
+                  <button type="button" class="remove" (click)="removeImage(i)" title="Remove">✕</button>
+                  <img [src]="img" alt="image {{i+1}}" />
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <label>Product Name</label>
+              <input type="text" formControlName="name" placeholder="Enter product name" />
+            </div>
+            <div class="form-row">
+              <label>Category</label>
+              <input type="text" formControlName="category" placeholder="Enter category" />
+            </div>
+            <div class="form-row">
+              <label>Description</label>
+              <!-- Replace with ngx-quill when installed -->
+              <textarea rows="5" formControlName="description" placeholder="Write a description..."></textarea>
+            </div>
+            <div class="form-row toggle">
+              <label>Status</label>
+              <label class="switch">
+                <input type="checkbox" formControlName="status" />
+                <span class="slider"></span>
+              </label>
+              <span class="status-text">{{ productForm.get('status')?.value ? 'Active' : 'Inactive' }}</span>
+            </div>
+
+          </div>
+
+          <div class="form-card">
+            <div class="variants-header">
+              <h3>Variants</h3>
+              <button type="button" class="btn btn-secondary" (click)="onAddVariant()">
+                <i class="fas fa-plus"></i> Add Variant
+              </button>
+            </div>
+
+            <div class="variants-table">
+              <div class="vt-head">
+                <div>Size</div>
+                <div>Color</div>
+                <div>Price</div>
+                <div>Stock</div>
+                <div></div>
+              </div>
+              <div class="vt-body">
+                <div class="vt-row" *ngFor="let v of variantsFA.controls; let i = index" [formGroup]="v">
+                  <div><input type="text" formControlName="size" placeholder="e.g. M" /></div>
+                  <div><input type="text" formControlName="color" placeholder="e.g. Black" /></div>
+                  <div><input type="number" formControlName="price" min="0" /></div>
+                  <div><input type="number" formControlName="stock" min="0" /></div>
+                  <div class="row-actions">
+                    <button type="button" class="icon-btn danger" (click)="onRemoveVariant(i)" title="Delete"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+                <div *ngIf="variantsFA.length===0" class="vt-empty">No variants added.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn" (click)="onCancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary">{{ editingId ? 'Update Product' : 'Save Product' }}</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

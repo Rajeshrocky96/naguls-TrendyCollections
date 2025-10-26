@@ -1,0 +1,117 @@
+<div class="dashboard-container" [class.sidebar-collapsed]="!isMobileMenuOpen">
+  <!-- Left Panel -->
+  <div class="left-panel" [class.mobile-menu-open]="isMobileMenuOpen">
+    <button class="mobile-menu-close" (click)="toggleMobileMenu()">
+      <i class="fas fa-times"></i> <!-- Assuming Font Awesome for close icon -->
+    </button>
+    <div class="logo-container">
+      <img src="https://nagulstrendycollections.com/cdn/shop/files/Asset_3.png?v=1682945313&width=240" alt="Nagul's Trendy Collections">
+      <h2>Nagul's Trendy Collections</h2>
+    </div>
+    
+    <nav class="nav-menu">
+
+      
+      <div class="nav-section">
+        <h3 class="section-title">Bulk Operations</h3>
+        <a class="nav-item" [class.active]="activeSection === 'dashboard'" (click)="setActiveSection('dashboard')">
+          <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" [class.active]="activeSection === 'tracking-update'" (click)="setActiveSection('tracking-update')">
+          <span class="nav-icon"><i class="fas fa-shipping-fast"></i></span>
+          <span>Tracking Update</span>
+        </a>
+        <a class="nav-item" [class.active]="activeSection === 'whatsapp-order-check'" (click)="setActiveSection('whatsapp-order-check')">
+          <span class="nav-icon"><i class="fab fa-whatsapp"></i></span>
+          <span>WhatsApp Orders</span>
+        </a>
+        <a class="nav-item" [class.active]="activeSection === 'print-invoices'" (click)="setActiveSection('print-invoices')">
+          <span class="nav-icon"><i class="fas fa-file-invoice"></i></span>
+          <span>Print Invoices</span>
+        </a>
+        <a class="nav-item" [class.active]="activeSection === 'products'" (click)="setActiveSection('products')" >
+          <span class="nav-icon"><i class="fas fa-box"></i></span>
+          <span>Products</span>
+        </a>
+      
+      </div>
+    </nav>
+    
+    <div class="user-info">
+      <div class="user-identity-group">
+        <div class="user-avatar">
+          <img src="https://nagulstrendycollections.com/cdn/shop/files/Asset_3.png?v=1682945313&width=240" alt="User">
+        </div>
+        <div class="user-details">
+          <h4>Nagul's</h4>
+          <p>Admin</p>
+        </div>
+      </div>
+      <div class="logout-icon" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-left">
+    <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <img
+      src="https://nagulstrendycollections.com/cdn/shop/files/Asset_3.png?v=1682945313&width=240"
+      alt="Logo"
+      class="header-logo"
+    />
+    <h2 class="welcome-text">Welcome Nagul's</h2>
+  </div>
+    </header>
+    
+    <!-- Main Content Area -->
+    <main class="content-area">
+      <!-- Show different sections based on selection -->
+      <div *ngIf="activeSection === 'dashboard'" class="dashboard-section">
+        <!-- Quick Links Section -->
+        <div class="quick-links-section">
+          <h3 class="quick-links-title">Quick Links</h3>
+          <div class="quick-links-cards">
+            <a class="quick-link-card" *ngFor="let link of quickLinks" [href]="link.url" target="_blank" rel="noopener noreferrer">
+              <div class="quick-link-icon" [ngClass]="link.colorClass">
+                <i [class]="link.iconClass"></i>
+              </div>
+              <div class="quick-link-content">
+                <div class="quick-link-title">{{ link.title }}</div>
+                <div class="quick-link-desc">{{ link.desc }}</div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <!-- End Quick Links Section -->
+      </div>
+      
+      <!-- Other sections would go here -->
+      <div *ngIf="activeSection === 'tracking-update'" class="tracking-update-section">
+        <app-tracking-update></app-tracking-update>
+      </div>
+      <div *ngIf="activeSection === 'whatsapp-order-check'" class="other-section">
+        <app-whatsapp-order-form></app-whatsapp-order-form> 
+      </div>
+      <div *ngIf="activeSection === 'print-invoices'" class="other-section">
+        <app-print-invoices></app-print-invoices>
+      </div>
+      <div *ngIf="activeSection === 'products'" class="other-section">
+        <app-products-view></app-products-view>
+      </div>
+      <div *ngIf="activeSection !== 'dashboard' && activeSection !== 'tracking-update' && activeSection !== 'products'&& activeSection !== 'whatsapp-order-check' && activeSection !== 'print-invoices'" class="other-section">
+        <div class="placeholder-content">
+          <h2>{{activeSection | titlecase}} Section</h2>
+          <p>This section is under development.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

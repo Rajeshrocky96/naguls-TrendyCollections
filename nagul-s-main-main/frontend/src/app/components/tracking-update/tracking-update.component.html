@@ -1,0 +1,110 @@
+<div class="tracking-update-container">
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
+  </div>
+  
+  <div class="form-section">
+    <h3>Update Order Tracking</h3>
+    <p class="scan-instruction">Scan the combined order barcode, then the tracking ID barcode.</p>
+
+    <div class="input-row">
+      <div class="input-group main-scan-group">
+        <label for="scanInput">Scan Order Barcode</label>
+        <input 
+          type="text" 
+          id="scanInput" 
+          placeholder="Scan combined order barcode here"
+          [(ngModel)]="scanInput"
+          (ngModelChange)="handleOrderScan()"
+          #orderIdInput
+          class="form-control"
+          autofocus>
+      </div>
+    </div>
+
+    <div class="input-row details-group">
+      <div class="input-group">
+        <label for="whatsappNumber">WhatsApp Number</label>
+        <input type="text" id="whatsappNumber" [(ngModel)]="whatsappNumber" class="form-control">
+      </div>
+      <div class="input-group">
+        <label for="orderId">Order ID</label>
+        <input type="text" id="orderId" [(ngModel)]="orderId" class="form-control">
+      </div>
+      <div class="input-group">
+        <label for="orderName">Order Name</label>
+        <input type="text" id="orderName" [(ngModel)]="orderName" class="form-control">
+      </div>
+    </div>
+    
+    <div class="input-row">
+      <div class="input-group tracking-group">
+        <label for="trackingId">Tracking ID</label>
+        <div class="tracking-input-container">
+          <input 
+            type="text" 
+            id="trackingId" 
+            placeholder="Scan Tracking ID" 
+            [(ngModel)]="trackingId"
+            (ngModelChange)="onTrackingIdChange()"
+            #trackingIdInput
+            [disabled]="!orderId"
+            class="form-control">
+          
+          <!-- Submit button next to tracking ID input -->
+          <button 
+            type="button" 
+            class="btn btn-primary submit-button" 
+            [ngClass]="{'submit-button-disabled': !isSubmitEnabled}" 
+            [disabled]="!isSubmitEnabled" 
+            (click)="updateTracking()">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast-container">
+      <div class="toast-notification" *ngIf="toastVisible" [ngClass]="statusClass">
+        <div class="toast-content">
+          <span class="toast-icon" *ngIf="statusClass === 'success'">✓</span>
+          <span class="toast-icon" *ngIf="statusClass === 'error'">✕</span>
+          <span class="toast-message">{{ statusMessage }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Recent Scans Table -->
+  <div class="recent-scans-section">
+    <h4>Recent Scans</h4>
+    
+    <table class="scans-table">
+      <thead>
+        <tr>
+          <th>WhatsApp Number</th>
+          <th>Order ID</th>
+          <th>Order Name</th>
+          <th>Tracking ID</th>
+          <th>Status</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let scan of recentScans">
+          <td>{{ scan.whatsappNumber }}</td>
+          <td>{{ scan.orderId }}</td>
+          <td>{{ scan.orderName }}</td>
+          <td>{{ scan.trackingId }}</td>
+          <td [ngClass]="'status-' + scan.status.toLowerCase()">{{ scan.status }}</td>
+          <td>{{ scan.timestamp | date:'short' }}</td>
+        </tr>
+        <tr *ngIf="recentScans.length === 0">
+          <td colspan="6" class="no-data">No recent scans</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

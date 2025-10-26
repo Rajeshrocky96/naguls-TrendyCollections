@@ -1,0 +1,129 @@
+<div class="print-invoices-container">
+  <div *ngIf="isGenerating" class="loader-overlay">
+    <div class="loader-spinner"></div>
+    <div class="loader-message">Generating invoices...</div>
+  </div>
+  <div class="print-invoices-header-row">
+    <div class="header-title">Print Invoices</div>
+    <div class="header-actions">
+      <mat-form-field appearance="outline">
+        <mat-label>Select Date</mat-label>
+        <input matInput [matDatepicker]="picker" [formControl]="dateControl" placeholder="Choose a date" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      <button mat-raised-button class="btn-submit-invoice" (click)="onSubmitDate()" [disabled]="!dateControl.value">Fetch</button>
+    </div>
+  </div>
+
+  <div *ngIf="step === 1">
+    <div class="preview-actions split-actions" *ngIf="orders.length > 0">
+      <span></span>
+      <button mat-stroked-button color="primary" (click)="showPreviewSection()" [disabled]="selectedOrderIds.length === 0">Show Preview</button>
+    </div>
+    <div class="table-scroll-container">
+      <div class="table-with-paginator">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" [checked]="isAllCurrentPageSelected" (change)="toggleSelectAll($event)"></th>
+              <th>Order ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <div class="table-body-scroll">
+              <tr *ngIf="isLoading">
+                <td colspan="5" style="text-align:center; color:#a41562; font-weight:600;">
+                  <mat-icon class="loader-spin" style="vertical-align: middle; margin-right: 6px;">hourglass_empty</mat-icon>
+                  Loading orders...
+                </td>
+              </tr>
+              <tr *ngIf="!isLoading && errorMessage">
+                <td colspan="5" style="text-align:center; color:#a41562; font-weight:600;">{{ errorMessage }}</td>
+              </tr>
+              <tr *ngIf="!isLoading && !errorMessage && !dateControl.value">
+                <td colspan="5" style="text-align:center; color:#a41562; font-weight:600;">Please select a date</td>
+              </tr>
+              <tr *ngIf="!isLoading && !errorMessage && dateControl.value && hasFetched && orders.length === 0">
+                <td colspan="5" style="text-align:center; color:#a41562; font-weight:600;">No data found for the selected date.</td>
+              </tr>
+              <tr *ngFor="let item of pagedOrders" [class.selected]="selectedOrderIds.includes(item['ORDER ID'])">
+                <td><input type="checkbox" [checked]="selectedOrderIds.includes(item['ORDER ID'])" (change)="toggleOrderSelection(item['ORDER ID'], $event)"></td>
+                <td>{{ item['ORDER ID'] }}</td>
+                <td>{{ item['NAME'] }}</td>
+                <td>{{ item['PHONE'] }}</td>
+                <td>{{ item['ORDER DATE'] | date: 'mediumDate' }}</td>
+              </tr>
+            </div>
+          </tbody>
+        </table>
+        <mat-paginator *ngIf="pagedOrders.length>0"
+          class="sticky-paginator"
+          [length]="orders.length"
+          [pageSize]="pageSize"
+          [pageIndex]="currentPage"
+          [pageSizeOptions]="pageSizeOptions"
+          (page)="onPageChange($event)">
+        </mat-paginator>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-section" *ngIf="step === 2 && previewSelectedOrders.length > 0">
+    <div class="preview-actions split-actions preview-bar">
+      <button mat-icon-button color="primary" (click)="goToStep(1)">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <button mat-stroked-button class="btn-generate-pdf" (click)="generateShippingSlips()">
+        <span >Generate PDF</span>
+      </button>
+    </div>
+    <div id="pdf-content">
+      <div class="pdf-page" *ngFor="let page of paginatedOrders; let pageIndex = index">
+        <div class="packing-slip" *ngFor="let item of page; let i = index">
+          <div class="brand-header">
+            <div class="brand-name">
+              <h2>Nagul's Trendy Collections</h2>
+            </div>
+            <div class="order-details-inline">
+              <small>Order #{{ item['ORDER ID'] }}</small>
+              <small>{{ item['ORDER DATE'] | date: 'mediumDate' }}</small>
+            </div>
+          </div>
+
+          <!-- <div class="header">
+            <div>
+              <h3>Packing Slip</h3>
+            </div>
+          </div> -->
+
+          <div class="address-section">
+            <div class="from">
+              <strong>From</strong><br />
+              Nagulstrendycollection<br />
+              3/299 Sadaiandi Thottam, Vavipalayam (Post)<br />
+              Kethanur via, Palladam (Tk)<br />
+              Tiruppur, Tamil Nadu<br />
+              Pincode: 641671<br/>
+              Phone No: 7010550600
+              <div class="qr-in-from">
+                <!-- <img [src]="getQrUrl(item)" alt="QR Code" /> -->
+              </div>
+            </div>
+
+            <div class="to">
+              <strong>Ship to</strong><br />
+              {{ item.NAME }}<br />
+              {{ item.ADDRESS }}<br />
+              <ng-container *ngIf="item.PINCODE">Pincode: {{ item.PINCODE }}<br /></ng-container>
+              Phone No: {{ item.PHONE }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,187 @@
+// Variables
+$primary-color: #a41562; // Matching Nagul's branding color
+$secondary-color: #f5f5f5;
+$error-color: #ff4c4c;
+$shadow-color: rgba(0, 0, 0, 0.1);
+$text-color: #333;
+$font-family: 'Arial', sans-serif;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+// Main container
+.login-container {
+  @include flex-center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(240, 240, 255, 0.8)),
+              url('https://img.freepik.com/free-photo/delivery-concept-handsome-african-american-delivery-man-carrying-package-box-grocery-food-drink-from-store-isolated-gray-studio-background-copy-space_1258-1225.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  box-sizing: border-box;
+}
+
+// Login card
+.login-card {
+  width: 100%;
+  max-width: 450px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px $shadow-color;
+  overflow: hidden;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+// Logo container
+.logo-container {
+  text-align: center;
+  margin-bottom: 30px;
+  
+  .logo-image {
+    width: 120px;
+    height: auto;
+    margin-bottom: 15px;
+    border-radius: 10px;
+  }
+
+  .logo-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: $primary-color;
+    margin: 0;
+    font-family: $font-family;
+  }
+}
+
+// Form styling
+.login-form {
+  width: 100%;
+
+  .form-group {
+    margin-bottom: 25px;
+    position: relative;
+  }
+
+  .input-group {
+    position: relative;
+    margin-bottom: 5px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 15px 15px;
+    font-size: 16px;
+    color: $text-color;
+    background-color: $secondary-color;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    box-sizing: border-box;
+    @include transition;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      background-color: white;
+    }
+
+    &.has-error {
+      border-color: $error-color;
+    }
+
+    &:focus + .form-label,
+    &.has-value + .form-label {
+      top: -12px;
+      left: 10px;
+      font-size: 12px;
+      background-color: white;
+      padding: 0 5px;
+    }
+  }
+
+  .form-label {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 16px;
+    color: #777;
+    pointer-events: none;
+    @include transition;
+  }
+
+  .error-message {
+    color: $error-color;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    @include transition;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba($primary-color, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 5px rgba($primary-color, 0.3);
+    }
+  }
+  
+  .login-hint {
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+    margin-top: 15px;
+    font-style: italic;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 576px) {
+  .login-card {
+    padding: 20px;
+  }
+  
+  .logo-container .logo-title {
+    font-size: 20px;
+  }
+  
+  .login-form .form-control,
+  .login-form .login-btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .login-form .form-label {
+    top: 12px;
+    font-size: 14px;
+  }
+  
+  .login-form .form-control:focus + .form-label,
+  .login-form .form-control.has-value + .form-label {
+    top: -10px;
+    font-size: 10px;
+  }
+}
